@@ -2,8 +2,19 @@
 
 VertexBuffer::VertexBuffer(void* data, uint32 numVerts)
 {
-	GLCall(glGenBuffers(1, &bufferID));
 	this->numVerts = numVerts;
+
+	GLCall(glGenVertexArrays(1, &vao));
+	GLCall(glBindVertexArray(vao));
+	GLCall(glGenBuffers(1, &bufferID));
+	GLCall(glBindBuffer(GL_ARRAY_BUFFER, bufferID));
+
+	// Position
+	GLCall(glEnableVertexAttribArray(0));
+	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(struct Vertex, position)));
+	// Norm
+	GLCall(glEnableVertexAttribArray(1));
+	GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(struct Vertex, normal)));
 	Update(data);
 }
 
@@ -21,10 +32,10 @@ void VertexBuffer::Update(void* data)
 
 void VertexBuffer::Bind() const
 {
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, bufferID));
+	GLCall(glBindVertexArray(vao));
 }
 
 void VertexBuffer::Unbind() const
 {
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	GLCall(glBindVertexArray(0));
 }

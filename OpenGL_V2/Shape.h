@@ -2,6 +2,7 @@
 #include "defines.h"
 #include "Shader.h"
 #include "glm/glm.hpp"
+#include "VertexBufferLayout.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 
@@ -9,10 +10,9 @@
 class Shape
 {
 public:
-
 	virtual ~Shape();
 	
-	void CreateVertexBuffer(void* data, uint32 numVerts);
+	void CreateVertexArray(void* data, uint32 numVerts);
 	void CreateIndexBuffer(void* data, uint32 numIndices, uint8 size);
 
 	void Bind();
@@ -27,22 +27,16 @@ public:
 	glm::vec3 GetInitialPosition();
 
 	void UpdateVertexBuffer(void* data);
-	void SetMaterial(Material material);
-	void SetShaderSettings();
+	virtual void ShaderSetColor(glm::vec3 color);
 
 protected:
-	glm::vec3 position;
-	glm::vec3 initialPosition;
+	glm::vec3 m_position;
+	glm::vec3 m_initialPosition;
 
-	Material material = {};
+	glm::vec3 m_color;
 
-	Shader* shader;
-	int diffusionLoc;
-	int specularLoc;
-	int emissiveLoc;
-	int shineLoc;
-
-	VertexBuffer* vertexBuffer;
-	IndexBuffer* indexBuffer;
+	Shader* m_shader;
+	VertexBuffer* m_vertexBuffer;
+	IndexBuffer* m_indexBuffer;
 };
 

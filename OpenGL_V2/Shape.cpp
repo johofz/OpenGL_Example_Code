@@ -5,26 +5,28 @@ Shape::~Shape()
 {
 }
 
-void Shape::CreateVertexBuffer(void* data, uint32 numVerts)
+void Shape::CreateVertexArray(void* data, uint32 numVerts)
 {
-	vertexBuffer = new VertexBuffer(data, numVerts);
+	m_vertexBuffer = new VertexBuffer(data, numVerts);
 }
 
 void Shape::CreateIndexBuffer(void* data, uint32 numIndices, uint8 size)
 {
-	indexBuffer = new IndexBuffer(data, numIndices, size);
+	m_indexBuffer = new IndexBuffer(data, numIndices, size);
 }
 
 void Shape::Bind()
 {
-	vertexBuffer->Bind();
-	indexBuffer->Bind();
+	m_shader->Bind();
+	m_vertexBuffer->Bind();
+	m_indexBuffer->Bind();
 }
 
 void Shape::Unbind()
 {
-	indexBuffer->Unbind();
-	vertexBuffer->Unbind();
+	m_indexBuffer->Unbind();
+	m_vertexBuffer->Unbind();
+	m_shader->Unbind();
 }
 
 void Shape::Move(glm::vec3 translation)
@@ -37,47 +39,32 @@ void Shape::Draw()
 
 VertexBuffer* Shape::GetVertexBuffer()
 {
-	return vertexBuffer;
+	return m_vertexBuffer;
 }
 
 IndexBuffer* Shape::GetIndexBuffer()
 {
-	return indexBuffer;
+	return m_indexBuffer;
 }
 
 glm::vec3 Shape::GetPosition()
 {
-	return position;
+	return m_position;
 }
 
 glm::vec3 Shape::GetInitialPosition()
 {
-	return initialPosition;
+	return m_initialPosition;
 }
 
 void Shape::UpdateVertexBuffer(void* data)
 {
-	vertexBuffer->Update(data);
+	m_vertexBuffer->Update(data);
 }
 
-void Shape::SetMaterial(Material material)
+void Shape::ShaderSetColor(glm::vec3 color)
 {
-	this->material = material;
-}
-
-void Shape::SetShaderSettings()
-{
-	GLCall(diffusionLoc = glGetUniformLocation(shader->GetShaderID(), "u_material.diffuse"));
-	ASSERT(diffusionLoc != -1);
-
-	GLCall(specularLoc = glGetUniformLocation(shader->GetShaderID(), "u_material.specular"));
-	ASSERT(specularLoc != -1);
-
-	GLCall(emissiveLoc = glGetUniformLocation(shader->GetShaderID(), "u_material.emissive"));
-	ASSERT(emissiveLoc != -1);
-
-	GLCall(shineLoc = glGetUniformLocation(shader->GetShaderID(), "u_material.shine"));
-	ASSERT(shineLoc != -1);
-
+	m_color = color;
+	m_shader->SetUniform(m_shader->GetUniformLoc("u_objectColor"), m_color);
 }
 

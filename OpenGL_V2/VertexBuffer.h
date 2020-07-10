@@ -13,6 +13,7 @@ public:
 	void Update(void* data);
 
 private:
+	GLuint vao;
 	GLuint bufferID;
 	uint32 numVerts;
 };

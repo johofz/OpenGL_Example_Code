@@ -1,0 +1,2 @@
+C:/Users/Johan/source/repos/OpenGL_V2/OpenGL_V2/glm/out/build/x64-Debug (Standard)/CMakeFiles/edit_cache.dir
+C:/Users/Johan/source/repos/OpenGL_V2/OpenGL_V2/glm/out/build/x64-Debug (Standard)/CMakeFiles/rebuild_cache.dir

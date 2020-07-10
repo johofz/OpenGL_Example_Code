@@ -2,51 +2,50 @@
 
 FPSCamera::FPSCamera(float32 fov, float32 width, float32 height) : Camera(fov, width, height)
 {
-	xRotation = -90.0f;
-	yRotation = 0.0f;
+	m_xRotation = -90.0f;
+	m_yRotation = 0.0f;
 
 	GetLineOfSight(0.0f, 0.0f);
-	Update();
+	UpdateView();
 }
 
 void FPSCamera::GetLineOfSight(float32 xRelative, float32 yRelative)
 {
-	xRotation += xRelative * sensitivity;
-	yRotation -= yRelative * sensitivity;
+	m_xRotation += xRelative * m_sensitivity;
+	m_yRotation -= yRelative * m_sensitivity;
 
-	if (yRotation > 89.9f)
-		yRotation = 89.9f;
-	if (yRotation < -89.9f)
-		yRotation = -89.9f;
+	if (m_yRotation > 89.9f)
+		m_yRotation = 89.9f;
+	if (m_yRotation < -89.9f)
+		m_yRotation = -89.9f;
 
-	lineOfSight.x = cos(glm::radians(xRotation)) * cos(glm::radians(yRotation));
-	lineOfSight.y = sin(glm::radians(yRotation));
-	lineOfSight.z = sin(glm::radians(xRotation)) * cos(glm::radians(yRotation));
+	m_lineOfSight.x = cos(glm::radians(m_xRotation)) * cos(glm::radians(m_yRotation));
+	m_lineOfSight.y = sin(glm::radians(m_yRotation));
+	m_lineOfSight.z = sin(glm::radians(m_xRotation)) * cos(glm::radians(m_yRotation));
 
-	lineOfSight = glm::normalize(lineOfSight);
+	m_lineOfSight = glm::normalize(m_lineOfSight);
 
-	Update();
+	UpdateView();
 }
 
-void FPSCamera::Update()
+void FPSCamera::UpdateView()
 {
-	view = glm::lookAt(position, position + lineOfSight, upwards);
-	viewProjection = projection * view;
+	m_view = glm::lookAt(m_position, m_position + m_lineOfSight, m_upwards);
 }
 
 void FPSCamera::MoveFront(float32 increment)
 {
-	glm::vec3 direction = glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * lineOfSight);
-	Translate(direction * increment * cameraSpeed);
+	glm::vec3 direction = glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * m_lineOfSight);
+	Translate(direction * increment * m_cameraSpeed);
 }
 
 void FPSCamera::MoveSideways(float32 increment)
 {
-	glm::vec3 direction = glm::cross(lineOfSight, upwards);
-	Translate(direction * increment * cameraSpeed);
+	glm::vec3 direction = glm::cross(m_lineOfSight, m_upwards);
+	Translate(direction * increment * m_cameraSpeed);
 }
 
 void FPSCamera::MoveUp(float32 increment)
 {
-	Translate(upwards * increment * cameraSpeed);
+	Translate(m_upwards * increment * m_cameraSpeed);
 }

@@ -117,8 +117,17 @@ GLuint Shader::GetShaderID()
 	return this->shaderID;
 }
 
+void Shader::SetUniform(const std::string& name, const float32& data)
+{
+	Bind();
+	int location = GetUniformLoc(name);
+	ASSERT(location != -1);
+	GLCall(glUniform1f(location, data));
+}
+
 void Shader::SetUniform(const std::string& name, const glm::vec3& data)
 {
+	Bind();
 	int location = GetUniformLoc(name);
 	ASSERT(location != -1);
 	GLCall(glUniform3fv(location, 1, &data.x));
@@ -126,6 +135,7 @@ void Shader::SetUniform(const std::string& name, const glm::vec3& data)
 
 void Shader::SetUniform(const std::string& name, const glm::vec4& data)
 {
+	Bind();
 	int location = GetUniformLoc(name);
 	ASSERT(location != -1);
 	GLCall(glUniform4fv(location, 1, &data.x));
@@ -133,6 +143,7 @@ void Shader::SetUniform(const std::string& name, const glm::vec4& data)
 
 void Shader::SetUniform(const std::string& name, const glm::mat3& data)
 {
+	Bind();
 	int location = GetUniformLoc(name);
 	ASSERT(location != -1);
 	GLCall(glUniformMatrix3fv(location, 1, GL_FALSE, &data[0][0]));
@@ -140,32 +151,44 @@ void Shader::SetUniform(const std::string& name, const glm::mat3& data)
 
 void Shader::SetUniform(const std::string& name, const glm::mat4& data)
 {
+	Bind();
 	int location = GetUniformLoc(name);
 	ASSERT(location != -1);
 	GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, &data[0][0]));
 }
 
 
+void Shader::SetUniform(const int& location, const float32& data)
+{
+	Bind();
+	ASSERT(location != -1);
+	GLCall(glUniform1f(location, data));
+}
+
 void Shader::SetUniform(const int& location, const glm::vec3& data)
 {
+	Bind();
 	ASSERT(location != -1);
 	GLCall(glUniform3fv(location, 1, &data.x));
 }
 
 void Shader::SetUniform(const int& location, const glm::vec4& data)
 {
+	Bind();
 	ASSERT(location != -1);
 	GLCall(glUniform4fv(location, 1, &data.x));
 }
 
 void Shader::SetUniform(const int& location, const glm::mat3& data)
 {
+	Bind();
 	ASSERT(location != -1);
 	GLCall(glUniformMatrix3fv(location, 1, GL_FALSE, &data[0][0]));
 }
 
 void Shader::SetUniform(const int& location, const glm::mat4& data)
 {
+	Bind();
 	ASSERT(location != -1);
 	GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, &data[0][0]));
 }

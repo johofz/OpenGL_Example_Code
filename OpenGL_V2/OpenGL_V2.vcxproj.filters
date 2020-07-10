@@ -42,7 +42,7 @@
     <ClCompile Include="FPSCamera.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="VertexArray.cpp">
+    <ClCompile Include="LightCube.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,18 +74,27 @@
     <ClInclude Include="FPSCamera.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="VertexArray.h">
+    <ClInclude Include="VertexBufferLayout.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="VertexBufferLayout.h">
+    <ClInclude Include="LightCube.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="lightSource.frag">
+      <Filter>Quelldateien\Shader</Filter>
+    </None>
+    <None Include="lightSource.shader">
+      <Filter>Quelldateien\Shader</Filter>
+    </None>
     <None Include="Basic.shader">
       <Filter>Quelldateien\Shader</Filter>
     </None>
-    <None Include="LightingShader.shader">
+    <None Include="Basic.frag">
+      <Filter>Quelldateien\Shader</Filter>
+    </None>
+    <None Include="Basic.vert">
       <Filter>Quelldateien\Shader</Filter>
     </None>
   </ItemGroup>

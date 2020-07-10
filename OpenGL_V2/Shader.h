@@ -25,11 +25,13 @@ public:
 
 	GLuint GetShaderID();
 
+	void SetUniform(const std::string& name, const float32& data);
 	void SetUniform(const std::string& name, const glm::vec3& data);
 	void SetUniform(const std::string& name, const glm::vec4& data);
 	void SetUniform(const std::string& name, const glm::mat3& data);
 	void SetUniform(const std::string& name, const glm::mat4& data);
 
+	void SetUniform(const int& location, const float32& data);
 	void SetUniform(const int& location, const glm::vec3& data);
 	void SetUniform(const int& location, const glm::vec4& data);
 	void SetUniform(const int& location, const glm::mat3& data);

@@ -4,23 +4,21 @@
 class Cube : public Shape
 {
 public:
-	Cube(glm::vec3 center, float32 width, Shader* shader);
+	Cube(const glm::vec3& center, float32 width, const glm::vec3& color, Shader* shader);
 
 	void UpdateVerts();
 	void Move(glm::vec3 translation) override;
 
 	void Draw() override;
 
-private:
+protected:
 
-	float32 width;
-	float32 height;
-	float32 depth;
+	float32 m_width;
 
-	uint32 numVerts = 24;
-	Vertex verts[24];
+	uint32 m_numVerts = 24;
+	Vertex m_verts[24];
 
-	uint32 numIndices = 36;
-	uint32 indices[36];
+	uint32 m_numIndices = 36;
+	uint32 m_indices[36];
 };
 

@@ -10,7 +10,6 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
@@ -70,41 +69,43 @@ int main(int argc, char** argv)
 	GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
 	GLCall(glDebugMessageCallback(glDebugCallback, 0));
 
-	Shader shader("LightingShader.shader");
-	shader.Bind();
+	Shader shader("Basic.shader");
+	Shader lightShader("lightSource.shader");
 
-	glm::vec3 lightDirection = glm::vec3(-1.0f);
-	glm::vec3 lightDiffuseColor = glm::vec3(1.0f);
-	glm::vec3 lightSpecularColor = lightDiffuseColor;
-	glm::vec3 lightAmbientColor = lightDiffuseColor * 0.2f;
+	glm::vec3 objectColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	shader.SetUniform(shader.GetUniformLoc("u_objectColor"), objectColor);
 
-	shader.SetUniform(shader.GetUniformLoc("u_directionalLight.direction"), lightDirection);
-	shader.SetUniform(shader.GetUniformLoc("u_directionalLight.diffuse"), lightDiffuseColor);
-	shader.SetUniform(shader.GetUniformLoc("u_directionalLight.specular"), lightSpecularColor);
-	shader.SetUniform(shader.GetUniformLoc("u_directionalLight.ambient"), lightAmbientColor);
+	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	shader.SetUniform(shader.GetUniformLoc("u_lightColor"), lightColor);
+
+	glm::vec3 lightPosition = glm::vec3(1.0f, 1.0f, -1.0f);
+
 	
 	FPSCamera camera(90.0f, (float32)screenWidth, (float32)screenHeigth);
 	camera.Translate(glm::vec3(0.0f, 0.0f, 3.0f));
 
-	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 modelViewProjection;
 
-	
-	Cube cube(glm::vec3(0.0f), 1.0f);
-	
+	glm::vec3 centerPoint = glm::vec3(0.0f);
+	float32 width = 1.0f; 
+	glm::vec3 color = glm::vec3(0.45f, 0.78f, 0.4f); // schönes Grün
 
-	VertexArray vertexArray;
-	VertexBuffer vertexBuffer(vertecies, numVerts);
-	VertexBufferLayout layout;
-	layout.Insert<float32>(numVerts);
-	layout.Insert<float32>(numVerts);
-	vertexArray.InsertBuffer(vertexBuffer, layout);
+	const int shapeCount = 125;
+	Shape* shapes[shapeCount];
+	int i = 0;
+	for (float32 x = 0.0f; x < 5.0f; x += 1.0f)
+		for (float32 y = 0.0f; y < 5.0f; y += 1.0f)
+			for (float32 z = 0.0f; z < 5.0f; z += 1.0f)
+			{
+				shapes[i] = new Cube(glm::vec3(x, y, z), width * 0.2f, color, &shader);
+				i++;
+			}
 
-	IndexBuffer indexBuffer(indicies, numIndicies, sizeof(indicies[0]));
+	Cube lightCube(lightPosition, width * 0.2f, lightColor, &lightShader);
 
-	GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+
+	//GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
 	GLCall(glEnable(GL_CULL_FACE));
-	GLCall(glFrontFace(GL_CW));
+	GLCall(glFrontFace(GL_CCW));
 	GLCall(glCullFace(GL_BACK));
 	GLCall(glEnable(GL_DEPTH_TEST));
 
@@ -120,6 +121,11 @@ int main(int argc, char** argv)
 	bool buttonD = false;
 	bool buttonSpace = false;
 	bool buttonShift = false;
+
+	bool buttonUP = false;
+	bool buttonDOWN = false;
+	bool buttonLEFT = false;
+	bool buttonRIGHT = false;
 
 
 	bool closed = false;
@@ -155,6 +161,18 @@ int main(int argc, char** argv)
 				case SDLK_LSHIFT:
 					buttonShift = true;
 					break;
+				case SDLK_UP:
+					buttonUP = true;
+					break;
+				case SDLK_DOWN:
+					buttonDOWN = true;
+					break;
+				case SDLK_LEFT:
+					buttonLEFT = true;
+					break;
+				case SDLK_RIGHT:
+					buttonRIGHT = true;
+					break;
 				case SDLK_ESCAPE:
 					SDL_SetRelativeMouseMode(SDL_FALSE);
 					break;
@@ -181,6 +199,18 @@ int main(int argc, char** argv)
 					break;
 				case SDLK_LSHIFT:
 					buttonShift = false;
+					break;
+				case SDLK_UP:
+					buttonUP = false;
+					break;
+				case SDLK_DOWN:
+					buttonDOWN = false;
+					break;
+				case SDLK_LEFT:
+					buttonLEFT = false;
+					break;
+				case SDLK_RIGHT:
+					buttonRIGHT = false;
 					break;
 				}
 			}
@@ -224,28 +254,47 @@ int main(int argc, char** argv)
 		{
 			camera.MoveUp(-dt);
 		}
+		if (buttonUP)
+		{
+			glm::vec3 direction = glm::vec3(1.0f, 0.0f, 1.0f) * camera.LineOfSight();
+			lightCube.Move(glm::normalize(direction) * dt * 5.0f);
+		}
+		if (buttonDOWN)
+		{
+			glm::vec3 direction = glm::vec3(1.0f, 0.0f, 1.0f) * camera.LineOfSight();
+			lightCube.Move(glm::normalize(direction) * -dt * 5.0f);
+		}
+		if (buttonLEFT)
+		{
+			glm::vec3 direction = glm::cross(camera.LineOfSight(), glm::vec3(0.0f, 1.0f, 0.0f));
+			lightCube.Move(glm::normalize(direction)* -dt * 5.0f);
+		}
+		if (buttonRIGHT)
+		{
+			glm::vec3 direction = glm::cross(camera.LineOfSight(), glm::vec3(0.0f, 1.0f, 0.0f));
+			lightCube.Move(glm::normalize(direction) * dt * 5.0f);
+		}
 
-		camera.Update();
+		glm::mat4 model = glm::mat4(1.0f);
 
-		glm::mat4 modelView = camera.GetView() * model;
-		glm::mat4 invModelView = glm::transpose(glm::inverse(modelView));
+		shader.SetUniform("u_model", model);
+		shader.SetUniform("u_view", camera.GetView());
+		shader.SetUniform("u_projection", camera.GetProjection());
+		shader.SetUniform("u_cameraPosition", camera.GetPosition());
+		shader.SetUniform("u_lightPosition", lightCube.GetPosition());
 
-		modelViewProjection = camera.GetViewProjection() * model;
-
-		shader.SetUniform("u_modelProjection", modelViewProjection);
-		shader.SetUniform("u_modelView", modelView);
-		shader.SetUniform("u_invModelView", invModelView);
-
-		glm::vec4 transLightDirection = glm::transpose(glm::inverse(camera.GetView())) * glm::vec4(lightDirection, 1.0f);
-
-		shader.SetUniform(shader.GetUniformLoc("u_directionalLight.direction"), glm::vec3(transLightDirection));
+		lightShader.SetUniform("u_model", model);
+		lightShader.SetUniform("u_view", camera.GetView());
+		lightShader.SetUniform("u_projection", camera.GetProjection());
 
 		GLCall(glClearColor(0.2f, 0.2f, 0.2f, 1.0f));
 		GLCall(glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT));
 
-		vertexArray.Bind();
-		indexBuffer.Bind();
-		GLCall(glDrawElements(GL_TRIANGLES, indexBuffer.GetNumIndices(), GL_UNSIGNED_INT, 0));
+		
+		for (int i = 0; i < shapeCount; i++)
+			shapes[i]->Draw();
+
+		lightCube.Draw();
 
 
 		SDL_GL_SwapWindow(window);
